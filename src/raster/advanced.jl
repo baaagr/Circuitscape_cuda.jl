@@ -288,7 +288,7 @@ function multiple_solver(cfg, solver, a::SparseMatrixCSC{T,V}, sources, grounds,
     deleteat!(r, dst_del)
     asolve = asolve[r, r]
 
-    volt = multiple_solve(solver, asolve, sources, cfg["suppress_messages"] in TRUELIST, cfg["use_gpu"])
+    volt = multiple_solve(solver, asolve, sources, cfg["suppress_messages"] in TRUELIST, cfg["use_gpu"] in TRUELIST)
 
     # Replace the inf with 0
     voltages = zeros(eltype(a), length(volt) + length(infgrounds))
