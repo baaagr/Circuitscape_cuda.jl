@@ -1,4 +1,4 @@
-cfg = Circuitscape.init_config()
+cfg = Circuitscape_cuda.init_config()
 
 state = Dict{Int, Symbol}()
 for i = 1:10
@@ -136,10 +136,10 @@ function step10(name, path)
     println("Step 10: Would you like to run Circuitscape?")
     opt = ["Yes", "Later"]
     n = request(RadioMenu(opt))
-    n == 1 && Circuitscape.compute(cfg)
+    n == 1 && Circuitscape_cuda.compute(cfg)
     if n == 2 
         println()
-        Circuitscape.write_config(cfg)
+        Circuitscape_cuda.write_config(cfg)
         println("$name.ini written to $(normpath(path))")
         println()
         println("Would you to build another problem?")

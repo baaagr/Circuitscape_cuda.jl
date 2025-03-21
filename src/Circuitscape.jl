@@ -1,5 +1,5 @@
 # __precompile__(false)
-module Circuitscape
+module Circuitscape_cuda
 using AlgebraicMultigrid
 using ArchGDAL
 using CUDA

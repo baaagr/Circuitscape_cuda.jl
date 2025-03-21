@@ -58,7 +58,7 @@ model_problem(s::Integer) = model_problem(Float64, s)
 # Testing utilities
 
 function test_problem(str)
-    base_path = joinpath(dirname(pathof(Circuitscape)), "..", "test", "input")
+    base_path = joinpath(dirname(pathof(Circuitscape_cuda)), "..", "test", "input")
     str2 = replace(str, ".ini" => "")
     if occursin("sgVerify", str)
         config_path = joinpath(base_path, "raster", "pairwise", replace(str2, "sgVerify" => ""), str)
@@ -129,7 +129,7 @@ end
 # Helps start new processes from the INI file
 function myaddprocs(n)
     addprocs(n)
-    @everywhere Core.eval(Main, :(using Circuitscape))
+    @everywhere Core.eval(Main, :(using Circuitscape_cuda))
 end
 
 # Reads the directory with the current maps
@@ -554,7 +554,7 @@ end
 # Testing utilities
 function change_to_test_path()
     origpath = pwd()
-    pkgpath = Base.pathof(Circuitscape)
+    pkgpath = Base.pathof(Circuitscape_cuda)
     cd(joinpath(dirname(pkgpath), "..", "test"))
     origpath
 end
