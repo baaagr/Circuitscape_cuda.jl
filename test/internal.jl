@@ -32,6 +32,7 @@ let
         cs_cfg["solver"] = "cholmod"
         cs_cfg["cholmod_batch_size"] = "1000"
         cs_cfg["data_type"] = "raster"
+        cs_cfg["use_gpu"] = "False"
 
         current = compute_omniscape_current(
                 conductance,
