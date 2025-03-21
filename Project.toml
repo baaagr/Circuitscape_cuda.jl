@@ -1,5 +1,5 @@
 name = "Circuitscape_cuda"
-uuid = "9a15202d-c671-4ab0-9417-c6cc6cecc7d7"
+uuid = "85fa41f6-3252-4ff0-89cf-f6786fd22f59"
 version = "0.0.3"
 
 [deps]
