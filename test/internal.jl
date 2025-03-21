@@ -106,8 +106,8 @@ end
 let
 
     println("pwd = $(pwd())")
-    cfg = Circuitscape.parse_config("input/raster/one_to_all/11/oneToAllVerify11.ini")
-    r = Circuitscape.load_raster_data(Float64, Int32, cfg)
+    cfg = Circuitscape_cuda.parse_config("input/raster/one_to_all/11/oneToAllVerify11.ini")
+    r = Circuitscape_cuda.load_raster_data(Float64, Int32, cfg)
 
     cellmap = r.cellmap
     polymap = r.polymap
@@ -118,7 +118,7 @@ let
                   4.0  0.0  0.0  0.0  0.0
                   1.0  0.0  0.0  0.0  2.0 ]
 
-    r = Circuitscape.create_new_polymap(cellmap, polymap, points_rc, 0, 0, point_map)
+    r = Circuitscape_cuda.create_new_polymap(cellmap, polymap, points_rc, 0, 0, point_map)
 
     @test r == [ 1.0  2.0  0.0  0.0  0.0
                  0.0  0.0  0.0  0.0  0.0
@@ -127,7 +127,7 @@ let
                  1.0  0.0  0.0  0.0  2.0 ]
 end
 
-import Circuitscape: resolve_conflicts
+import Circuitscape_cuda: resolve_conflicts
 
 @test resolve_conflicts([1.,0.,0.], [1.,0.,0.], :rmvgnd) == ([1, 0, 0], [0, 0, 0], [1, 0, 0])
 @test resolve_conflicts([1.,0.,0.], [1.,0.,0.], :rmvsrc) == ([0, 0, 0], [1, 0, 0], [1, 0, 0])
@@ -135,7 +135,7 @@ import Circuitscape: resolve_conflicts
 @test resolve_conflicts([1.,0.,0.], [1.,0.,0.], :rmvall) == ([0, 0, 0], [1, 0, 0], [1, 0, 0])
 
 # Construct graph
-import Circuitscape: construct_graph
+import Circuitscape_cuda: construct_graph
 let
         gmap = Float64[0 1 2
                 2 0 0
@@ -202,8 +202,8 @@ SIZE_3 =
 # Issue 151
 # Issue 151
 try
-    Circuitscape.read_point_map(Int32, "samples.txt",
-                                Circuitscape.RasterMeta(50, 50, 0.0, 0.0, 0.5, -9999.0, [0.0], ""))
+    Circuitscape_cuda.read_point_map(Int32, "samples.txt",
+                                Circuitscape_cuda.RasterMeta(50, 50, 0.0, 0.0, 0.5, -9999.0, [0.0], ""))
 catch e
     @test e == "At least one focal node location falls outside of habitat map"
 end
