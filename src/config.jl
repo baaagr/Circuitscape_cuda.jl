@@ -18,6 +18,7 @@ end
 function init_config()
     a = Dict{String, String}()
 
+    a["cuda"] = "False" # new
     a["version"] = "unknown"
     a["connect_four_neighbors_only"] =  "False"
     a["connect_using_avg_resistances"] = "False"
@@ -124,6 +125,7 @@ function write_config(cfg)
 
         [Calculation options]
 		solver = $(cfg["solver"])
+		cuda = $(cfg["cuda"])
 
         [Output options]
         write_cum_cur_map_only = $(cfg["write_cum_cur_map_only"] in TRUELIST)
