@@ -209,6 +209,8 @@ function solve(prob::GraphProblem{T,V}, ::AMGSolver, flags, cfg, log)::Matrix{T}
                         current[comp_i] = -1
                         current[comp_j] = 1
 
+                        #TODO ADD CUDA OPTION
+                        # COPY MATRIX, CURRENT, P TO CUDA
                         # Solve system
                         # csinfo("Solving points $pi and $pj")
                         log && csinfo("Solving pair $(d[(pi,pj)]) of $num", cfg["suppress_messages"] in TRUELIST)
@@ -601,6 +603,14 @@ function sum_off_diag(G, i)
 function solve_linear_system(
             G::SparseMatrixCSC{T,V},
             curr::Vector{T}, M)::Vector{T} where {T,V}
+    v = cg(G, curr, Pl = M, reltol = T(1e-6), maxiter = 100_000)
+	@assert norm(G*v .- curr) / norm(curr) < 1e-4
+    v
+end
+
+function solve_linear_system(
+            G::CUSPARSE.CuSparseMatrixCSC{T,V},
+            curr::CuVector{T}, M)::Vector{T} where {T,V}
     v = cg(G, curr, Pl = M, reltol = T(1e-6), maxiter = 100_000)
 	@assert norm(G*v .- curr) / norm(curr) < 1e-4
     v

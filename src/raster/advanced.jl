@@ -288,7 +288,7 @@ function multiple_solver(cfg, solver, a::SparseMatrixCSC{T,V}, sources, grounds,
     deleteat!(r, dst_del)
     asolve = asolve[r, r]
 
-    volt = multiple_solve(solver, asolve, sources, cfg["suppress_messages"] in TRUELIST)
+    volt = multiple_solve(solver, asolve, sources, cfg["suppress_messages"] in TRUELIST, cfg["use_gpu"])
 
     # Replace the inf with 0
     voltages = zeros(eltype(a), length(volt) + length(infgrounds))
@@ -305,9 +305,21 @@ function multiple_solver(cfg, solver, a::SparseMatrixCSC{T,V}, sources, grounds,
     voltages
 end
 
-function multiple_solve(s::AMGSolver, matrix::SparseMatrixCSC{T,V}, sources::Vector{T}, suppress_info::Bool) where {T,V}
+function cpu_to_gpu(matrix::SparseMatrixCSC{T,V}, sources::Vector{T}, M::SparseMatrixCSC) where {T,V}
+    matrix = CUSPARSE.CuSparseMatrixCSC(matrix)
+    sources = CuVector(sources)
+    M = CUSPARSE.CuSparseMatrixCSC(M)
+    return matrix, sources, M
+end
+
+function multiple_solve(s::AMGSolver, matrix::SparseMatrixCSC{T,V}, sources::Vector{T}, suppress_info::Bool, use_gpu::Bool) where {T,V}
     t1 = @elapsed M = aspreconditioner(smoothed_aggregation(matrix))
     csinfo("Time taken to construct preconditioner = $t1 seconds", suppress_info)
+    #TODO matrix, sources, M copy to gpu
+    if use_gpu
+        t1 = @elapsed (matrix, sources, M) = cpu_to_gpu(matrix, sources, M)
+        csinfo("Time taken to copy data to GPU = $t1 seconds", suppress_info)
+    end
     t1 = @elapsed volt = solve_linear_system(matrix, sources, M)
     # @assert norm(matrix*volt .- sources) < (eltype(sources) == Float64 ? TOL_DOUBLE : TOL_SINGLE)
 	@assert (norm(matrix*volt .- sources) / norm(sources)) < 1e-4
@@ -315,7 +327,7 @@ function multiple_solve(s::AMGSolver, matrix::SparseMatrixCSC{T,V}, sources::Vec
     volt
 end
 
-function multiple_solve(s::CholmodSolver, matrix::SparseMatrixCSC{T,V}, sources::Vector{T}, suppress_info::Bool) where {T,V}
+function multiple_solve(s::CholmodSolver, matrix::SparseMatrixCSC{T,V}, sources::Vector{T}, suppress_info::Bool, use_gpu::Bool) where {T,V}
     factor = construct_cholesky_factor(matrix, s, suppress_info)
     t1 = @elapsed volt = solve_linear_system(factor, matrix, sources)
     # @assert norm(matrix*volt .- sources) < (eltype(sources) == Float64 ? TOL_DOUBLE : TOL_SINGLE)
@@ -324,7 +336,7 @@ function multiple_solve(s::CholmodSolver, matrix::SparseMatrixCSC{T,V}, sources:
     volt
 end
 
-function multiple_solve(s::MKLPardisoSolver, matrix::SparseMatrixCSC{T,V}, sources::Vector{T}, suppress_info::Bool) where {T,V}
+function multiple_solve(s::MKLPardisoSolver, matrix::SparseMatrixCSC{T,V}, sources::Vector{T}, suppress_info::Bool, use_gpu::Bool) where {T,V}
     factor = construct_cholesky_factor(matrix, s, suppress_info)
     t1 = @elapsed volt = solve_linear_system(factor, matrix, sources)
     # @assert norm(matrix*volt .- sources) < (eltype(sources) == Float64 ? TOL_DOUBLE : TOL_SINGLE)

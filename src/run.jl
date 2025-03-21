@@ -22,6 +22,11 @@ function compute(path::String)
     end
     V = cfg["use_64bit_indexing"] in TRUELIST ? Int64 : Int32
     csinfo("Precision used: $(cfg["precision"])", cfg["suppress_messages"] in TRUELIST)
+    use_gpu = cfg["use_gpu"] in TRUELIST
+    if use_gpu && (cfg["solver"] in CHOLMOD || cfg["solver"] in MKLPARDISO)
+        cswarn("Cholmod & MKLPardiso solver does not work with gpu. Switching off gpu.")
+        cfg["use_gpu"] = False
+    end
     is_parallel = cfg["parallelize"] in TRUELIST
     if is_parallel
         n = parse(Int, cfg["max_parallel"])
