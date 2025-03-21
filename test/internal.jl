@@ -1,5 +1,5 @@
-import Circuitscape: construct_node_map, compute_omniscape_current
-using Circuitscape
+import Circuitscape_cuda: construct_node_map, compute_omniscape_current
+using Circuitscape_cuda
 
 # Omniscape moving window solve test 
 # just checking syntax, other tests should be sufficient to ensure correctness.

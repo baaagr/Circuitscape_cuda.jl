@@ -1,6 +1,6 @@
-using Circuitscape
+using Circuitscape_cuda
 using Test
-import Circuitscape: compute_single, compute_cholmod, compute_parallel,
+import Circuitscape_cuda: compute_single, compute_cholmod, compute_parallel,
                      runtests
 using Logging
 Logging.disable_logging(Logging.Info)
