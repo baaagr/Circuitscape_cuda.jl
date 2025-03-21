@@ -2,6 +2,7 @@
 module Circuitscape
 using AlgebraicMultigrid
 using ArchGDAL
+using CUDA
 using Graphs
 using SimpleWeightedGraphs
 using IterativeSolvers

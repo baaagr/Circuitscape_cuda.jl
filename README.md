@@ -1,4 +1,7 @@
-# Circuitscape
+# Circuitscape cuda
+
+*Here I work on adding an option to run Circuitscape on GPU.*
+
 
 
 | **Documentation** | **Chat** | **Build Status**|
