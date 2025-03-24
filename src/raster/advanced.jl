@@ -310,21 +310,24 @@ function multiple_solver(cfg, solver, a::SparseMatrixCSC{T,V}, sources, grounds,
     voltages
 end
 
-function cpu_to_gpu(matrix::SparseMatrixCSC{T,V}, sources::Vector{T}, M::SparseMatrixCSC) where {T,V}
+function cpu_to_gpu(matrix::SparseMatrixCSC{T,V}, sources::Vector{T}) where {T,V}
     matrix = CUSPARSE.CuSparseMatrixCSC(matrix)
     sources = CuVector(sources)
-    M = CUSPARSE.CuSparseMatrixCSC(M)
-    return matrix, sources, M
+    matrix, sources
 end
 
 function multiple_solve(s::AMGSolver, matrix::CUSPARSE.CuSparseMatrixCSC{T,V}, sources::CuVector{T}, suppress_info::Bool) where {T,V}
     t1 = @elapsed M = aspreconditioner(smoothed_aggregation(matrix))
     csinfo("Time taken to construct preconditioner = $t1 seconds", suppress_info)
-    t1 = @elapsed volt = solve_linear_system(matrix, sources, M)
+    t1 = @elapsed volt_gpu = solve_linear_system(matrix, sources, M)
     # @assert norm(matrix*volt .- sources) < (eltype(sources) == Float64 ? TOL_DOUBLE : TOL_SINGLE)
-	@assert (norm(matrix*volt .- sources) / norm(sources)) < 1e-4
+	@assert (norm(matrix*volt_gpu .- sources) / norm(sources)) < 1e-4
     csinfo("Time taken to solve linear system = $t1 seconds", suppress_info)
-    volt
+    volt_cpu = Vector{T}(undef,sizeof(volt_gpu))
+    println(typeof(volt_gpu))
+    println(volt_gpu)
+    copy!(volt_cpu, volt_gpu)
+    volt_cpu
 end
 
 function multiple_solve(s::AMGSolver, matrix::SparseMatrixCSC{T,V}, sources::Vector{T}, suppress_info::Bool) where {T,V}
@@ -343,8 +346,6 @@ function multiple_solve(s::CholmodSolver, matrix::SparseMatrixCSC{T,V}, sources:
     # @assert norm(matrix*volt .- sources) < (eltype(sources) == Float64 ? TOL_DOUBLE : TOL_SINGLE)
 	@assert (norm(matrix*volt .- sources) / norm(sources)) < 1e-4
     csinfo("Time taken to solve linear system = $t1 seconds", suppress_info)
-    println(typeof(volt))
-    println(volt)
     volt
 end
 
