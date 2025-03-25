@@ -291,7 +291,6 @@ function multiple_solver(cfg, solver, a::SparseMatrixCSC{T,V}, sources, grounds,
     if cfg["use_gpu"] in TRUELIST
         t1 = @elapsed asolve, sources = cpu_to_gpu(asolve, sources)
         csinfo("Time taken to copy data to GPU = $t1 seconds", cfg["suppress_messages"] in TRUELIST)
-        println("Time taken to copy data to GPU = $t1 seconds")
     end
 
     volt = multiple_solve(solver, asolve, sources, cfg["suppress_messages"] in TRUELIST)
@@ -320,7 +319,8 @@ end
 function multiple_solve(s::AMGSolver, matrix::CUSPARSE.CuSparseMatrixCSC{T,V}, sources::CuVector{T}, suppress_info::Bool) where {T,V}
     t1 = @elapsed volt_gpu = solve_linear_system(matrix, sources)
     # @assert norm(matrix*volt .- sources) < (eltype(sources) == Float64 ? TOL_DOUBLE : TOL_SINGLE)
-	#@assert (norm(matrix*volt_gpu .- sources) / norm(sources)) < 1e-4
+    println("aaaeeeee")
+	@assert (norm(matrix*volt_gpu .- sources) / norm(sources)) < 1e-4
     csinfo("Time taken to solve linear system = $t1 seconds", suppress_info)
     volt_cpu = Vector{T}(undef,sizeof(volt_gpu))
     println(typeof(volt_gpu))
@@ -330,9 +330,10 @@ function multiple_solve(s::AMGSolver, matrix::CUSPARSE.CuSparseMatrixCSC{T,V}, s
 end
 
 function multiple_solve(s::AMGSolver, matrix::SparseMatrixCSC{T,V}, sources::Vector{T}, suppress_info::Bool) where {T,V}
-    t1 = @elapsed M = aspreconditioner(smoothed_aggregation(matrix))
-    csinfo("Time taken to construct preconditioner = $t1 seconds", suppress_info)
-    t1 = @elapsed volt = solve_linear_system(matrix, sources, M)
+    #t1 = @elapsed M = aspreconditioner(smoothed_aggregation(matrix))
+    #csinfo("Time taken to construct preconditioner = $t1 seconds", suppress_info)
+    #t1 = @elapsed volt = solve_linear_system(matrix, sources, M)
+    t1 = @elapsed volt = solve_linear_system(matrix, sources)
     # @assert norm(matrix*volt .- sources) < (eltype(sources) == Float64 ? TOL_DOUBLE : TOL_SINGLE)
 	@assert (norm(matrix*volt .- sources) / norm(sources)) < 1e-4
     csinfo("Time taken to solve linear system = $t1 seconds", suppress_info)
