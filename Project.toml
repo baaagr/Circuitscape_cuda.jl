@@ -1,6 +1,6 @@
 name = "Circuitscape_cuda"
 uuid = "85fa41f6-3252-4ff0-89cf-f6786fd22f59"
-version = "0.0.20"
+version = "0.0.21"
 
 [deps]
 AlgebraicMultigrid = "2169fc97-5a83-5252-b627-83903c6c433c"
