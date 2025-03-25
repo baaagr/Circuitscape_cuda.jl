@@ -290,10 +290,11 @@ function multiple_solver(cfg, solver, a::SparseMatrixCSC{T,V}, sources, grounds,
 
     if cfg["use_gpu"] in TRUELIST
         t1 = @elapsed asolve, sources = cpu_to_gpu(asolve, sources)
-        csinfo("Time taken to copy data to GPU = $t1 seconds")#, cfg["suppress_messages"] in TRUELIST)
+        csinfo("Time taken to copy data to GPU = $t1 seconds", cfg["suppress_messages"] in TRUELIST)
+        println("Time taken to copy data to GPU = $t1 seconds")
     end
 
-    volt = multiple_solve(solver, asolve, sources, false)#cfg["suppress_messages"] in TRUELIST)
+    volt = multiple_solve(solver, asolve, sources, cfg["suppress_messages"] in TRUELIST)
 
     # Replace the inf with 0
     voltages = zeros(eltype(a), length(volt) + length(infgrounds))
