@@ -319,12 +319,8 @@ end
 function multiple_solve(s::AMGSolver, matrix::CUSPARSE.CuSparseMatrixCSC{T,V}, sources::CuVector{T}, suppress_info::Bool) where {T,V}
     t1 = @elapsed volt_gpu = solve_linear_system(matrix, sources)
     # @assert norm(matrix*volt .- sources) < (eltype(sources) == Float64 ? TOL_DOUBLE : TOL_SINGLE)
-    println("$t1 aaaeeeee $volt_gpu")
 	@assert (norm(matrix*volt_gpu .- sources) / norm(sources)) < 1e-4
-    println("a na tym dopiero się wykłada?")
     csinfo("Time taken to solve linear system = $t1 seconds", suppress_info)
-    #volt_cpu = Vector{T}(undef,sizeof(volt_gpu))
-    #copy!(volt_cpu, volt_gpu)
     volt_cpu = Vector{T}(volt_gpu)
     volt_cpu
 end

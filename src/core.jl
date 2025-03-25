@@ -211,12 +211,21 @@ function solve(prob::GraphProblem{T,V}, ::AMGSolver, flags, cfg, log)::Matrix{T}
 
                         #TODO ADD CUDA OPTION
                         # COPY MATRIX, CURRENT, P TO CUDA
+                        if cfg["use_gpu"] in TRUELIST                                               
+                            t1 = @elapsed matrix, current = cpu_to_gpu(matrix, current)
+                            csinfo("Time taken to copy data to GPU = $t1 seconds", cfg["suppress_messages"] in TRUELIST)
+                        end
+
                         # Solve system
                         # csinfo("Solving points $pi and $pj")
                         log && csinfo("Solving pair $(d[(pi,pj)]) of $num", cfg["suppress_messages"] in TRUELIST)
-                        t2 = @elapsed v = solve_linear_system(matrix, current, P)
+                        t2 = @elapsed v = solve_linear_system(matrix, current)
+                        #t2 = @elapsed v = solve_linear_system(matrix, current, P)
                         csinfo("Time taken to solve linear system = $t2 seconds", cfg["suppress_messages"] in TRUELIST)
 
+                        if cfg["use_gpu"] in TRUELIST
+                            v = Vector{T}(v)
+                        end 
                         v .= v .- v[comp_i]
 
                         # Calculate resistance
@@ -611,7 +620,7 @@ end
 function solve_linear_system(
             G::SparseMatrixCSC{T,V},
             curr::Vector{T})::Vector{T} where {T,V}
-    v = cg(G, curr, Pl = M, reltol = T(1e-6), maxiter = 100_000)
+    v = cg(G, curr, reltol = T(1e-6), maxiter = 100_000)
 	@assert norm(G*v .- curr) / norm(curr) < 1e-4
     v
 end
@@ -620,12 +629,9 @@ function solve_linear_system(
             G::CUSPARSE.CuSparseMatrixCSC{T,V},
             curr::CuVector{T})::CuVector{T} where {T,V}
     v = cg(G, curr, reltol = T(1e-6), maxiter = 100_000)
-    println("WTF")
 	@assert norm(G*v .- curr) / norm(curr) < 1e-4
-    println("WTF WTF")
     v
 end
-
 
 function solve_linear_system(factor::SuiteSparse.CHOLMOD.Factor, matrix, rhs)
     lhs = factor \ rhs
