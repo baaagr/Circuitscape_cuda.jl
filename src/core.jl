@@ -211,7 +211,7 @@ function solve(prob::GraphProblem{T,V}, ::AMGSolver, flags, cfg, log)::Matrix{T}
 
                         #TODO ADD CUDA OPTION
                         # COPY MATRIX, CURRENT, P TO CUDA
-                        if cfg["use_gpu"] in TRUELIST                                               
+                        if cfg["use_gpu"] in TRUELIST
                             t1 = @elapsed matrix, current = cpu_to_gpu(matrix, current)
                             csinfo("Time taken to copy data to GPU = $t1 seconds", cfg["suppress_messages"] in TRUELIST)
                         end
@@ -225,7 +225,7 @@ function solve(prob::GraphProblem{T,V}, ::AMGSolver, flags, cfg, log)::Matrix{T}
 
                         if cfg["use_gpu"] in TRUELIST
                             v = Vector{T}(v)
-                        end 
+                        end
                         v .= v .- v[comp_i]
 
                         # Calculate resistance
@@ -608,6 +608,17 @@ function sum_off_diag(G, i)
      end
      sum
  end
+
+function cpu_to_gpu(matrix::SparseMatrixCSC{T,V}, sources::Vector{T}) where {T,V}
+    matrix = CUSPARSE.CuSparseMatrixCSC(matrix)
+    sources = CuVector(sources)
+    matrix, sources
+end
+
+function cpu_to_gpu(matrix::CUSPARSE.CuSparseMatrixCSC{T,V}, sources::Vector{T}) where {T,V}
+    sources = CuVector(sources)
+    matrix, sources
+end
 
 function solve_linear_system(
             G::SparseMatrixCSC{T,V},
