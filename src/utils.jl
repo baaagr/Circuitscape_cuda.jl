@@ -89,6 +89,26 @@ function compute_cholmod(str, batch_size = 5)
     _compute(T, V, cfg)
 end
 
+function compute_gpu(str)
+    cfg = parse_config(str)
+    T = cfg["precision"] in SINGLE ? Float32 : Float64
+    V = cfg["use_64bit_indexing"] in TRUELIST ? Int64 : Int32
+    cfg["use_gpu"] = "True"
+    cfg["solver"] = "cg+amg"
+    cfg["precision"] = "double"
+    _compute(T, V, cfg)
+end
+
+function compute_standard(str)
+    cfg = parse_config(str)
+    T = cfg["precision"] in SINGLE ? Float32 : Float64
+    V = cfg["use_64bit_indexing"] in TRUELIST ? Int64 : Int32
+    cfg["use_gpu"] = "False"
+    cfg["solver"] = "cg+amg"
+    cfg["precision"] = "double"
+    _compute(T, V, cfg)
+end
+
 function compute_single(str)
     cfg = parse_config(str)
     cfg["precision"] = "single"
