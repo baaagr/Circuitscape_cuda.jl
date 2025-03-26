@@ -152,7 +152,11 @@ function solve(prob::GraphProblem{T,V}, ::AMGSolver, flags, cfg, log)::Matrix{T}
         matrix.nzval .+= eps(eltype(matrix)) * norm(matrix.nzval)
 
         # Construct preconditioner *once* for every CC
-        t1 = @elapsed P = aspreconditioner(smoothed_aggregation(matrix))
+        if cfg["use_gpu"] in TRUELIST
+            t1 = @elapsed P = BlockJacobiPreconditioner(CUSPARSE.CuSparseMatrixCSC(matrix))
+        else
+            t1 = @elapsed P = aspreconditioner(smoothed_aggregation(matrix))
+        end
         csinfo("Time taken to construct preconditioner = $t1 seconds", cfg["suppress_messages"] in TRUELIST)
 
         # Get local nodemap for CC - useful for output writing
@@ -622,7 +626,7 @@ end
 function solve_linear_system(
             G::SparseMatrixCSC{T,V},
             curr::Vector{T}, M)::Vector{T} where {T,V}
-    v = cg(G, curr, Pl = M, reltol = T(1e-6), maxiter = 100_000)
+    v = IterativeSolvers.cg(G, curr, Pl = M, reltol = T(1e-6), maxiter = 100_000)
 	@assert norm(G*v .- curr) / norm(curr) < 1e-4
     v
 end
@@ -630,8 +634,7 @@ end
 function solve_linear_system(
             G::CUSPARSE.CuSparseMatrixCSC{T,V},
             curr::CuVector{T}, M)::CuVector{T} where {T,V}
-    # preconditioner is not used!
-    v = cg(G, curr, reltol = T(1e-6), maxiter = 100_000)
+    v = Krylov.cg(G, curr, M=M, rtol = T(1e-6), itmax = 100_000)
 	@assert norm(G*v .- curr) / norm(curr) < 1e-4
     v
 end
