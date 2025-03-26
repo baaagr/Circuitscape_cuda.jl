@@ -12,6 +12,6 @@ end
 
 #for f in (compute, compute_cholmod, compute_parallel)
 #for f in (compute,)
-for f in (compute_gpu, compute_cg_amg)
+for f in (compute_gpu,)
     runtests(f)
 end

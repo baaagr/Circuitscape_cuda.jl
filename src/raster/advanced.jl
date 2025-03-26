@@ -315,10 +315,7 @@ function multiple_solve(s::AMGSolver, matrix::CUSPARSE.CuSparseMatrixCSC{T,V}, s
     #t1 = @elapsed M = kp_ilu0(matrix)
     #t1 = @elapsed M = kp_ic0(matrix)
     
-    ae = SparseMatrixCSC(matrix)
-    ey = jacobi_preconditioner(ae)
-    t1 = @elapsed M = CUSPARSE.CuSparseMatrixCSC(ey)
-    #t1 = @elapsed M = CUSPARSE.CuSparseMatrixCSC{T,V}(jacobi_preconditioner(SparseMatrixCSC{T,V}(matrix)))
+    t1 = @elapsed M = CUSPARSE.CuSparseMatrixCSC(jacobi_preconditioner(SparseMatrixCSC(matrix)))
     csinfo("Time taken to construct preconditioner = $t1 seconds", suppress_info)
     t1 = @elapsed volt = solve_linear_system(matrix, sources, M)
     # @assert norm(matrix*volt .- sources) < (eltype(sources) == Float64 ? TOL_DOUBLE : TOL_SINGLE)
