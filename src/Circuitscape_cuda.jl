@@ -2,14 +2,16 @@
 module Circuitscape_cuda
 using AlgebraicMultigrid
 using ArchGDAL
-using CUDA
 using Graphs
 using SimpleWeightedGraphs
 using IterativeSolvers
 using GZip
 
+using CUDA
+using Krylov
+using KrylovPreconditioners
+
 using LinearAlgebra
-using LinearSolve
 using SparseArrays
 using SharedArrays
 using Distributed
