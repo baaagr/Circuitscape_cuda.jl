@@ -209,7 +209,6 @@ function solve(prob::GraphProblem{T,V}, ::AMGSolver, flags, cfg, log)::Matrix{T}
                         current[comp_i] = -1
                         current[comp_j] = 1
 
-                        #TODO ADD CUDA OPTION
                         # COPY MATRIX, CURRENT, P TO CUDA
                         if cfg["use_gpu"] in TRUELIST
                             t1 = @elapsed matrix, current = cpu_to_gpu(matrix, current)
@@ -219,8 +218,8 @@ function solve(prob::GraphProblem{T,V}, ::AMGSolver, flags, cfg, log)::Matrix{T}
                         # Solve system
                         # csinfo("Solving points $pi and $pj")
                         log && csinfo("Solving pair $(d[(pi,pj)]) of $num", cfg["suppress_messages"] in TRUELIST)
-                        t2 = @elapsed v = solve_linear_system(matrix, current)
-                        #t2 = @elapsed v = solve_linear_system(matrix, current, P)
+                        t2 = @elapsed v = solve_linear_system(matrix, current, P)
+                        
                         csinfo("Time taken to solve linear system = $t2 seconds", cfg["suppress_messages"] in TRUELIST)
 
                         if cfg["use_gpu"] in TRUELIST
@@ -631,7 +630,8 @@ end
 function solve_linear_system(
             G::CUSPARSE.CuSparseMatrixCSC{T,V},
             curr::CuVector{T}, M)::CuVector{T} where {T,V}
-    v = cg(G, curr, Pl = M, reltol = T(1e-6), maxiter = 100_000)
+    # preconditioner is not used!
+    v = cg(G, curr, reltol = T(1e-6), maxiter = 100_000)
 	@assert norm(G*v .- curr) / norm(curr) < 1e-4
     v
 end
