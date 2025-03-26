@@ -628,9 +628,8 @@ end
 
 function jacobi_preconditioner(G::SparseMatrixCSC{T,V})::SparseMatrixCSC{T,V} where {T,V}
     n, m = size(G)
-    M = spzeros(n,m)
-    d = [G[i,i] ≠ 0 ? 1 / abs(G[i,i]) : 1 for i=1:n]  # Jacobi preconditioner
-    M = M[diagind(d)]
+    d = [G[i,i] != 0 ? 1 / abs(G[i,i]) : 1 for i=1:n]
+    M = spdiagm(d)
     M
 end
 
