@@ -315,7 +315,7 @@ function multiple_solve(s::AMGSolver, matrix::CUSPARSE.CuSparseMatrixCSC{T,V}, s
     #t1 = @elapsed M = kp_ilu0(matrix)
     #t1 = @elapsed M = kp_ic0(matrix)
     
-    ae = SparseMatrixCSC{T,V}(matrix)
+    ae = SparseMatrixCSC{T,V}(Array(matrix))
     ey = jacobi_preconditioner(ae)
     t1 = @elapsed M = CUSPARSE.CuSparseMatrixCSC{T,V}(ey)
     #t1 = @elapsed M = CUSPARSE.CuSparseMatrixCSC{T,V}(jacobi_preconditioner(SparseMatrixCSC{T,V}(matrix)))
