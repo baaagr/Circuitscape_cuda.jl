@@ -1,6 +1,6 @@
 name = "Circuitscape_cuda"
 uuid = "85fa41f6-3252-4ff0-89cf-f6786fd22f59"
-version = "0.1.0"
+version = "0.1.1"
 
 [deps]
 AlgebraicMultigrid = "2169fc97-5a83-5252-b627-83903c6c433c"
@@ -13,6 +13,7 @@ GZip = "92fee26a-97fe-5a0c-ad85-20a5f3185b63"
 Graphs = "86223c79-3864-5bf0-83f7-82e725a168b6"
 IterativeSolvers = "42fd0dbc-a981-5370-80f2-aaf504508153"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+LinearSolve = "7ed4a6bd-45f5-4d41-b270-4a48e9bafcae"
 Logging = "56ddb016-857b-54e1-b83d-db4d58db5568"
 REPL = "3fa0cd96-eef1-5676-8a61-b3b8758bbffb"
 SharedArrays = "1a1011a3-84de-559e-8e89-a11a2f7dc383"

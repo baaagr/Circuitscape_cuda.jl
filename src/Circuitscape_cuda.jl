@@ -9,6 +9,7 @@ using IterativeSolvers
 using GZip
 
 using LinearAlgebra
+using LinearSolve
 using SparseArrays
 using SharedArrays
 using Distributed
