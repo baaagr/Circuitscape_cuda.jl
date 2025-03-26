@@ -634,7 +634,7 @@ end
 function solve_linear_system(
             G::CUSPARSE.CuSparseMatrixCSC{T,V},
             curr::CuVector{T}, M)::CuVector{T} where {T,V}
-    v = Krylov.cg(G, curr, M=M, rtol = T(1e-6), itmax = 100_000)
+    v, stats = Krylov.cg(G, curr, M=M, rtol = T(1e-6), itmax = 100_000)
 	@assert norm(G*v .- curr) / norm(curr) < 1e-4
     v
 end
