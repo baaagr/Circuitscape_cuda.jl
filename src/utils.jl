@@ -99,7 +99,7 @@ function compute_gpu(str)
     _compute(T, V, cfg)
 end
 
-function compute_standard(str)
+function compute_cg_amg(str)
     cfg = parse_config(str)
     T = cfg["precision"] in SINGLE ? Float32 : Float64
     V = cfg["use_64bit_indexing"] in TRUELIST ? Int64 : Int32
