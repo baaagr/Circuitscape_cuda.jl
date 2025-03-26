@@ -153,7 +153,7 @@ function solve(prob::GraphProblem{T,V}, ::AMGSolver, flags, cfg, log)::Matrix{T}
 
         # Construct preconditioner *once* for every CC
         if cfg["use_gpu"] in TRUELIST
-            t1 = @elapsed P = BlockJacobiPreconditioner(CUSPARSE.CuSparseMatrixCSC(matrix))
+            t1 = @elapsed P = BlockJacobiPreconditioner(CUSPARSE.CuSparseMatrixCSC(matrix), npart=2)
         else
             t1 = @elapsed P = aspreconditioner(smoothed_aggregation(matrix))
         end
