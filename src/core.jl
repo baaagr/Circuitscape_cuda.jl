@@ -154,8 +154,9 @@ function solve(prob::GraphProblem{T,V}, ::AMGSolver, flags, cfg, log)::Matrix{T}
         # Construct preconditioner *once* for every CC
         if cfg["use_gpu"] in TRUELIST
             #t1 = @elapsed P = BlockJacobiPreconditioner(CUSPARSE.CuSparseMatrixCSC(matrix), 2)
-            t1 = @elapsed P = kp_ic0(CUSPARSE.CuSparseMatrixCSC(matrix))
+            #t1 = @elapsed P = kp_ic0(CUSPARSE.CuSparseMatrixCSC(matrix))
             #t1 = @elapsed P = kp_ilu0(CUSPARSE.CuSparseMatrixCSC(matrix))
+            t1 = @elapsed P = jacobi_preconditioner(matrix)
         else
             t1 = @elapsed P = aspreconditioner(smoothed_aggregation(matrix))
         end
@@ -623,6 +624,13 @@ end
 function cpu_to_gpu(matrix::CUSPARSE.CuSparseMatrixCSC{T,V}, sources::Vector{T}) where {T,V}
     sources = CuVector(sources)
     matrix, sources
+end
+
+function jacobi_preconditioner(G::SparseMatrixCSC{T,V})::SparseMatrixCSC{T,V} where {T,V}
+    n, m = size(G)
+    d = [G[i,i] ≠ 0 ? 1 / abs(G[i,i]) : 1 for i=1:n]  # Jacobi preconditioner
+    M = diagm(d)
+    M
 end
 
 function solve_linear_system(
