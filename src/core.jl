@@ -156,7 +156,7 @@ function solve(prob::GraphProblem{T,V}, ::AMGSolver, flags, cfg, log)::Matrix{T}
             #t1 = @elapsed P = BlockJacobiPreconditioner(CUSPARSE.CuSparseMatrixCSC(matrix), 2)
             #t1 = @elapsed P = kp_ic0(CUSPARSE.CuSparseMatrixCSC(matrix))
             #t1 = @elapsed P = kp_ilu0(CUSPARSE.CuSparseMatrixCSC(matrix))
-            t1 = @elapsed P = jacobi_preconditioner(matrix)
+            t1 = @elapsed P = CUSPARSE.CuSparseMatrixCSC(jacobi_preconditioner(matrix))
         else
             t1 = @elapsed P = aspreconditioner(smoothed_aggregation(matrix))
         end
