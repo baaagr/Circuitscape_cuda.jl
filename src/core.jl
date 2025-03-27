@@ -92,6 +92,7 @@ function solve(prob::GraphProblem{T,V}, ::AMGSolver, flags, cfg, log)::Matrix{T}
     println(cc)
     points = prob.points
     exclude = prob.exclude_pairs
+    println("EXCLUDE: $exclude")
     nodemap = prob.nodemap
     polymap = prob.polymap
     orig_pts = prob.user_points
