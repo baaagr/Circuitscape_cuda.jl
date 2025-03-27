@@ -216,7 +216,7 @@ function solve(prob::GraphProblem{T,V}, ::AMGSolver, flags, cfg, log)::Matrix{T}
                         current[comp_i] = -1
                         current[comp_j] = 1
 
-                        print(current)
+                        print(SparseMatrixCSC(current))
 
                         # COPY MATRIX, CURRENT, P TO CUDA
                         if cfg["use_gpu"] in TRUELIST
