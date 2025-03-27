@@ -169,6 +169,7 @@ function solve(prob::GraphProblem{T,V}, ::AMGSolver, flags, cfg, log)::Matrix{T}
         csinfo("Time taken to construct local nodemap = $t2 seconds", cfg["suppress_messages"] in TRUELIST)
 
         component_data = ComponentData(comp, matrix, local_nodemap, hbmeta, cellmap)
+        println(matrix)
 
         function f(i)
 
