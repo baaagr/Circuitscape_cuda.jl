@@ -88,8 +88,8 @@ function solve(prob::GraphProblem{T,V}, ::AMGSolver, flags, cfg, log)::Matrix{T}
     # Data
     a = prob.G
     cc = prob.cc
-    printjl("======= CC ======")
-    printjl(cc)
+    println("======= CC ======")
+    println(cc)
     points = prob.points
     exclude = prob.exclude_pairs
     nodemap = prob.nodemap
