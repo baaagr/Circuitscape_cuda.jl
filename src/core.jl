@@ -88,6 +88,8 @@ function solve(prob::GraphProblem{T,V}, ::AMGSolver, flags, cfg, log)::Matrix{T}
     # Data
     a = prob.G
     cc = prob.cc
+    printjl("======= CC ======")
+    printjl(cc)
     points = prob.points
     exclude = prob.exclude_pairs
     nodemap = prob.nodemap
@@ -216,7 +218,7 @@ function solve(prob::GraphProblem{T,V}, ::AMGSolver, flags, cfg, log)::Matrix{T}
                         current[comp_i] = -1
                         current[comp_j] = 1
 
-                        print(sparse(current))
+                        println(sparse(current))
 
                         # COPY MATRIX, CURRENT, P TO CUDA
                         if cfg["use_gpu"] in TRUELIST
