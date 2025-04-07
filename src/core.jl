@@ -87,17 +87,25 @@ function solve(prob::GraphProblem{T,V}, ::AMGSolver, flags, cfg, log)::Matrix{T}
 
     # Data
     a = prob.G
+    println("======= a ======")
+    println(a)
     cc = prob.cc
     println("======= CC ======")
     println(cc)
     points = prob.points
+    println("======= points ======")
+    println(points)
     exclude = prob.exclude_pairs
     println("EXCLUDE: $exclude")
     nodemap = prob.nodemap
+    println("======= nodemap ======")
+    println(nodemap)
     polymap = prob.polymap
     orig_pts = prob.user_points
     hbmeta = prob.hbmeta
     cellmap = prob.cellmap
+    println("======= cellmap ======")
+    println(cellmap)
 
     # Flags
     outputflags = flags.outputflags
