@@ -160,7 +160,7 @@ function solve(prob::GraphProblem{T,V}, ::AMGSolver, flags, cfg, log)::Matrix{T}
         matrix = comps[cid]
 
         # Regularization step
-        matrix.nzval .+= eps(eltype(matrix)) * norm(matrix.nzval)
+        #matrix.nzval .+= eps(eltype(matrix)) * norm(matrix.nzval)
 
         # Construct preconditioner *once* for every CC
         if cfg["use_gpu"] in TRUELIST
