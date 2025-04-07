@@ -170,7 +170,8 @@ function solve(prob::GraphProblem{T,V}, ::AMGSolver, flags, cfg, log)::Matrix{T}
         csinfo("Time taken to construct local nodemap = $t2 seconds", cfg["suppress_messages"] in TRUELIST)
 
         component_data = ComponentData(comp, matrix, local_nodemap, hbmeta, cellmap)
-        println("==== matrix ====")
+        println("cid: $cid, comp: $comp")
+        println("  ==== MATRIX ====")
         println(matrix)
 
         function f(i)
@@ -222,7 +223,7 @@ function solve(prob::GraphProblem{T,V}, ::AMGSolver, flags, cfg, log)::Matrix{T}
                         current[comp_i] = -1
                         current[comp_j] = 1
 
-                        println("=== current ===")
+                        println("    === CURRENT ===")
                         println(sparse(current))
 
                         # COPY MATRIX, CURRENT, P TO CUDA
