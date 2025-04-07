@@ -11,7 +11,7 @@ Logging.disable_logging(Logging.Info)
 end
 
 #for f in (compute, compute_cholmod, compute_parallel)
-#for f in (compute,)
-for f in (compute_gpu,)
+#for f in (compute_gpu,)
+for f in (compute,)
     runtests(f)
 end
